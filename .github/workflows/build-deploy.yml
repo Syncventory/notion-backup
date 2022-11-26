@@ -1,10 +1,6 @@
 name: notion-backup-build-deploy
 
 on:
-  push:
-    branches: [ master ]
-
-  # adds a "run workflow" button to the page
   workflow_dispatch:
 
 # Share data between jobs: actions/upload-artifact, actions/download-artifact

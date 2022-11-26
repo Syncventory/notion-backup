@@ -2,7 +2,10 @@ name: notion-backup-docker-run
 
 on:
   # adds a "run workflow" button to the page
+  # workflow_dispatch:
   workflow_dispatch:
+  schedule:
+    - cron: '0 3 */3 * *'
 
 # See https://github.com/marketplace/actions/docker-run-step
 # See https://github.com/addnab/docker-run-action
@@ -11,10 +14,17 @@ jobs:
   run-docker-image:
     runs-on: ubuntu-latest
     steps:
+      - name: Decodes Gdrive Secret
+        run: |
+          echo $GDRIVE_KEYS_BASE64 | base64 -d > gdrive_creds.json
+        env:
+          GDRIVE_KEYS_BASE64: ${{ secrets.GOOGLE_DRIVE_SERVICE_ACCOUNT_SECRET_JSON_BASE64 }}
+      
       - uses: kohlerdominik/docker-run-action@v1
         with:
           # public, private or local image
           image: ghcr.io/jckleiner/notion-backup
+          volumes: ${{ github.workspace }}:/workspace
           # pass or create environment variables
           environment: |
             NOTION_SPACE_ID=${{ secrets.NOTION_SPACE_ID }}
@@ -23,8 +33,7 @@ jobs:
             
             GOOGLE_DRIVE_ROOT_FOLDER_ID=${{ secrets.GOOGLE_DRIVE_ROOT_FOLDER_ID }}
             GOOGLE_DRIVE_SERVICE_ACCOUNT=${{ secrets.GOOGLE_DRIVE_SERVICE_ACCOUNT }}
-            GOOGLE_DRIVE_SERVICE_ACCOUNT_SECRET_JSON=${{ secrets.GOOGLE_DRIVE_SERVICE_ACCOUNT_SECRET_JSON }}
-            GOOGLE_DRIVE_SERVICE_ACCOUNT_SECRET_FILE_PATH=${{ secrets.GOOGLE_DRIVE_SERVICE_ACCOUNT_SECRET_FILE_PATH }}
+            GOOGLE_DRIVE_SERVICE_ACCOUNT_SECRET_FILE_PATH=/workspace/gdrive_creds.json
             
             DROPBOX_ACCESS_TOKEN=${{ secrets.DROPBOX_ACCESS_TOKEN }}
             
