@@ -5,7 +5,7 @@ on:
   # workflow_dispatch:
   workflow_dispatch:
   schedule:
-    - cron: '0 3 */3 * *'
+    - cron: '0 6 */3 * *'
 
 # See https://github.com/marketplace/actions/docker-run-step
 # See https://github.com/addnab/docker-run-action
